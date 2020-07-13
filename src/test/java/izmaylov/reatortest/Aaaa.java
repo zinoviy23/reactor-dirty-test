@@ -4,16 +4,21 @@ import org.junit.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
+import reactor.test.StepVerifier;
 
 import java.time.Duration;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 public class Aaaa {
     @Test
     public void name() {
+        Hooks.onOperatorDebug();
         Flux.just(1, 2, 3)
                 .<String>handle((i, sink) -> {
 //                    sink.error(new RuntimeException());
@@ -32,6 +37,22 @@ public class Aaaa {
         Flux.just(1, 2, 3).map(i -> null).subscribe();
     }
 
+    public Mono<Integer> m() {
+        return Mono.just(1);
+    }
+
+    @Test
+    public void innerPublishOn() throws InterruptedException {
+        Flux.just(1, 2, 3)
+                .flatMap(i -> Flux.just(i, i).subscribeOn(Schedulers.parallel()))
+                .map(i -> {
+                    return Mono.fromFuture(CompletableFuture.completedFuture(i)).block();
+                })
+                .subscribe();
+
+        Thread.sleep(1000);
+    }
+
     @Test
     public void kek() {
 //        Hooks.onOperatorDebug();
@@ -46,6 +67,7 @@ public class Aaaa {
                 .map(i -> i + 2)
                 .doOnNext(i -> System.out.println(i))
                 .flatMap(i -> Flux.just(i + 1, i))
+                .flatMap(i -> m())
                 .<Integer>handle((i, sink) -> sink.next(i + 1))
                 .map(i -> {
                     CountDownLatch latch = new CountDownLatch(1);
@@ -62,6 +84,7 @@ public class Aaaa {
                     return i;
                 })
                 .blockLast();
+        Flux.just(1);
     }
 
     @Test
@@ -79,6 +102,8 @@ public class Aaaa {
                 .map(i -> new String[] { i })
                 .doOnNext(x -> System.out.println(x))
                 .subscribe();
+
+        AtomicInteger num = new AtomicInteger();
     }
 
     @Test

@@ -42,5 +42,16 @@ public class ForTest {
 
 
         f.subscribe();
+
+
+//        int i = 10;
+        Flux.just(1, 2, 3)
+                .map(i -> i + 1)
+                .map(i -> i + 2)
+                .map(z -> z + 2 + 2);
+
+        Flux.just(1, 2, 3)
+                .filter(i -> i + 1 < 1)
+                .map(String::valueOf);
     }
 }

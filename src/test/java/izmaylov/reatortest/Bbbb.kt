@@ -7,11 +7,12 @@ import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
 import java.time.Duration
 import java.util.concurrent.CountDownLatch
+import java.util.function.Function
 
 class Bbbb {
     @Test
     fun `simple test`() {
-        Hooks.onOperatorDebug()
+//        Hooks.onOperatorDebug()
         Flux.range(0, 5)
                 .subscribeOn(Schedulers.parallel())
                 .subscribeOn(Schedulers.single())
@@ -35,5 +36,14 @@ class Bbbb {
                     i
                 }
                 .blockLast()
+    }
+
+    fun a() {
+        Flux.just(1, 2, 3)
+                .map(object : Function<Int, String?> {
+                    override fun apply(t: Int): String? {
+                        return null
+                    }
+                })
     }
 }

@@ -24,6 +24,9 @@ import java.util.stream.Stream;
 
 @Service
 public class SomeService {
+    public Mono<Integer> produce() {
+        return Mono.just(1).map(i -> i + 3);
+    }
 
     private Mono<Integer> mapper(int i) {
         System.out.println("Assembly!");
@@ -113,16 +116,18 @@ public class SomeService {
                 .flatMap(i -> Flux.<String>error(new RuntimeException()))
                 .filter(i -> i.length() < 3)
                 .filter(i -> i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3)
+                .filter(i -> i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3)
+                .filter(i -> i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3)
+                .filter(i -> i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3)
+                .filter(i -> i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3 && i.length() < 3)
                 .map(Integer::parseInt)
                 .map(i -> Integer.toString(i + 1 + 2))
-                .map(i -> i)
-                .map(i -> i)
                 .map(i -> i)
                 .subscribeOn(Schedulers.parallel());
 
         Flux.just(1, 2)
                 .publishOn(Schedulers.parallel())
-                .publishOn(Schedulers.elastic())
+//                .publishOn(Schedulers.elastic())
                 .map(i -> Mono.just(1).block());
 
         Flux<Integer> fff = (a != null ? Flux.just(1, 2, 3) : Flux.just(2, 3, 4)).publishOn(Schedulers.parallel());
@@ -139,10 +144,10 @@ public class SomeService {
                         sink.next(Integer.toString(i));
                 });
 
-        Flux.just(1, 2, 3)
-                .filter(i -> i > 3)
-                .map(i -> Integer.toString(i))
-                .subscribe();
+        Flux<String> stringFlux = Flux.just(1, 2, 3)
+                .handle((i, sink) -> {
+                    if (i > 3) sink.next(Integer.toString(i));
+                });
 
         Flux.just(1, 2, 3)
                 .handle((Integer i, SynchronousSink<Integer> sink) -> {
@@ -296,6 +301,10 @@ public class SomeService {
             return Flux.just(Mono.just(1).block(), Mono.just(1).block());
         }).map(i -> Mono.just(1).block()).subscribe();
 
+        Mono.just(1).as((m) -> (String)null).charAt(10);
+        Supplier<String> function = () -> null;
+        function.get().charAt(10);
+
         return Mono.empty();
     }
 
@@ -307,6 +316,52 @@ public class SomeService {
 
     private void block() {
 
+    }
+
+//    public void use() {
+//        Mono<Integer> m = Mono.just(1)
+//                .publishOn(Schedulers.single());
+//        useNonBlocking(m);
+//    }
+
+    public static void useNonBlocking(Mono<Integer> m) {
+        m
+                .map(i -> Mono.just(1).block());
+
+        m
+                .map(i -> Flux.just(1, 2, 3).blockFirst());
+    }
+
+    static class AAAA {
+        public static void recursive(Mono<Integer> m) {
+            m = m.map(i -> Mono.just(1).block());
+            m = m.publishOn(Schedulers.parallel());
+            recursive(m);
+        }
+    }
+
+    void threeMaps() {
+        Flux<Integer> f = Flux.just(1, 2, 3)
+                .map(new Function<Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer i) {
+                        return Mono.just(i).block();
+                    }
+                })
+                .map(new Function<Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer i) {
+                        return Flux.just(i, i + 1).blockLast();
+                    }
+                })
+                .map(new Function<Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer i) {
+                        return Mono.just(i).block();
+                    }
+                });
+
+        f.subscribeOn(Schedulers.parallel());
     }
 
 }

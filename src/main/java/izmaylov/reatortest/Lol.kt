@@ -1,5 +1,9 @@
+@file:JvmMultifileClass
+@file:JvmName("LolUtil")
+
 package izmaylov.reatortest
 
+import izmaylov.reatortest.SomeService.useNonBlocking
 import org.reactivestreams.Processor
 import org.reactivestreams.Publisher
 import org.springframework.stereotype.Service
@@ -7,7 +11,9 @@ import reactor.core.publisher.DirectProcessor
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.publisher.toMono
+import reactor.core.publisher.toFlux
 import reactor.core.scheduler.Schedulers
+import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadLocalRandom
@@ -50,7 +56,7 @@ class Lol {
     }.map { c }
             .map {
                 if (d != null) {
-                    return@map d
+                    return@map null
                 } else {
                     1
                 }
@@ -86,12 +92,14 @@ class Lol {
 
         fun s(ss: String) = println(ss)
 
-        Flux.just(10).map {
+        val bbbb = Flux.just(10).map {
             if (a != null) {
                 return@map a
             } else {
                 return@map a ?: 0
             }
+        }.map {
+
         }
 
         1.toMono().map { it }
@@ -115,7 +123,11 @@ object MyIterable : Iterable<Int> {
 val nullable = if (ThreadLocalRandom.current().nextBoolean()) null else "a"
 fun a() {
     Flux.just(1, 2, 3)
-            .map { nullable }
+            .map {
+                if (nullable != null)
+                    return@map nullable
+                else 10
+            }
 }
 
 fun AA() {
@@ -191,6 +203,13 @@ fun AA() {
     kekx.subscribe { println(it + 10) }
     kekx.subscribe { println(it + 100) }
 
+    listOf(1).toFlux()
+            .filter { it > 1}
+            .filter { it > 1}
+            .filter { it > 1}
+            .filter { it > 1}
+            .filter { it > 1}
+
     kekx.blockLast()
 
     println("vse")
@@ -227,6 +246,7 @@ fun AA() {
             .subscribe()
 
     val a = Flux.just(1, 2, 3).takeIf { Random.nextBoolean() }
+    val c = Mono.just(1).`as` { null as? Int }
 }
 
 fun Any.lol() = println(this)
@@ -245,4 +265,10 @@ fun Any.lol() = println(this)
 fun usedAsArrayElement() {
     val a = arrayOfNulls<Publisher<*>>(10)
     a[0] = Mono.just(1)
+}
+
+private fun passNonBlocking() {
+    val m = Mono.delay(Duration.ofMillis(100))
+            .map { 10 }
+    useNonBlocking(m)
 }
